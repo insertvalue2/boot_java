@@ -1,4 +1,4 @@
-package bubble.test.ex04;
+package tenco.com.test_09;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -21,10 +21,13 @@ public class BubbleFrame extends JFrame {
 	}
 
 	private void initObject() {
-		backgroundMap = new JLabel(new ImageIcon("image/backgroundMap.png"));
+//		backgroundMap = new JLabel(new ImageIcon("image/test.png"));
+		backgroundMap = new JLabel(new ImageIcon("image/backgroundMapService.png"));
+//		backgroundMap = new JLabel(new ImageIcon("image/backgroundMap.png"));
 		setContentPane(backgroundMap);
 		player = new Player();
 		add(player);
+		
 	}
 
 	private void initSetting() {
@@ -41,20 +44,23 @@ public class BubbleFrame extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// System.out.println(e.getKeyCode());
+
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					if (!player.isLeft()) {
+					if (!player.isLeft() && !player.isLeftWallCrash()) {
 						player.left();
 					}
 					break;
 				case KeyEvent.VK_RIGHT:
-					if (!player.isRight()) {
+					if (!player.isRight() && !player.isRightWallCrash()) {
 						player.right();
 					}
 
 					break;
 				case KeyEvent.VK_UP:
-					player.up();
+					if(!player.isUp() && !player.isDown()) {
+						player.up();
+					}
 					break;
 				}
 			}

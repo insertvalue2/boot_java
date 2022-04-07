@@ -1,4 +1,4 @@
-package bubble.test.ex04;
+package tenco.com.test_11;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -25,6 +25,7 @@ public class BubbleFrame extends JFrame {
 		setContentPane(backgroundMap);
 		player = new Player();
 		add(player);
+		
 	}
 
 	private void initSetting() {
@@ -40,21 +41,22 @@ public class BubbleFrame extends JFrame {
 			// 키보드 클릭 이벤트 핸들러
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// System.out.println(e.getKeyCode());
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					if (!player.isLeft()) {
+					if (!player.isLeft() && !player.isLeftWallCrash()) {
 						player.left();
 					}
 					break;
 				case KeyEvent.VK_RIGHT:
-					if (!player.isRight()) {
+					if (!player.isRight() && !player.isRightWallCrash()) {
 						player.right();
 					}
 
 					break;
 				case KeyEvent.VK_UP:
-					player.up();
+					if(!player.isUp() && !player.isDown()) {
+						player.up();
+					}
 					break;
 				}
 			}
