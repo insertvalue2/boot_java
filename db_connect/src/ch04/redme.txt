@@ -1,0 +1,12 @@
+
+preparedStatement 사용 방법
+
+Statement와 PreparedStatement의 차이는 캐시 사용 유무입니다.
+statement와 달리 preparedStatement는 객체를 캐시에 담아 재사용합니다.
+따라서 반복적으로 쿼리를 수행한다면 statement에 비해 성능이 좋습니다.
+또한, 시큐어 코딩을 보면 Statement를 사용하지말고 PreparedStatement를 
+사용하라는 규칙에서 볼 수 있듯이 보안적인 문제에 있어서statement는 
+취약점을 가지고 있기 때문에 사용하지 않는 것이 권고되고 있습니다. 
+
+
+

@@ -1,0 +1,16 @@
+
+
+
+executeQuery와 executeUpdate의 차이가 뭘까요 ?
+executeQuery는 result set을 만드는 sql문에서 사용하며,
+ 주로 SELECT문을 수행할 때 사용됩니다.
+executeUpdate는 INSERT나 UPDATE와 같은 DDL이나 
+DML을 실행할 때 사용됩니다.
+
+
+
+SQLException Can not issue data manipulation
+UPDATE, INSERT, DELETE문을 사용할 때 executeUpdate()로 전송하지 않았을 경우에 발생한다.
+UPDATE, INSERT, DELETE문이 리턴값을 갖지 않기 때문이다. 그래서 executeUpdate() 메서드의 리턴값은 쿼리를 전송해서 변화한 행의 갯수이다.
+
+

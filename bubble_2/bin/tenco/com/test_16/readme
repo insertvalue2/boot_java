@@ -1,0 +1,11 @@
+
+
+1. 버블 객체가 전체 정보를 알 필요가 있을까??? 
+2. 자기가 스스로 화면에 그림을 지우고 메모리에서 내려가자 !!
+3. JLable --> 기능 있기 때문에 setIcon(null) 
+4. 자신에 정보를 private 멤버 변수로 만들어 놓고 bubbleContext = this 
+5. bubbleContext = null;
+6. 코드 리팩토링 (버블을 만드는 행위에 주체는 player 이다)    
+
+
+
