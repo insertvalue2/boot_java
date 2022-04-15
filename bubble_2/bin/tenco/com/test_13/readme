@@ -1,6 +1,0 @@
-
-1. 인터페이스 default 문법 사용
-2. 버클 클래스 left, right, up 기능 구현 (쓰레드 생성까지) 
-3. 버블 프레임 space bar 리스너 등록 및 버블 클래스  
-4. moveableAdapter 제거 
-left, right --> up() 구현하지 않음 heap에 계속 객체 생성 됨 !!!! 
