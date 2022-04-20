@@ -28,266 +28,409 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 
-public class Client extends JFrame implements ActionListener {
-	
-	
-	//Login GUI 변수
-	private JFrame Login_init = new JFrame(); //JFrame을 직접 생성함.
-	private JPanel pnlLogin;
-	private JTextField tfServerIp;
-	private JTextField tfServerPort;
-	private JTextField tfUserId;
-	private JLabel lblServerIp;
-	private JLabel lblServerPort;
-	private JLabel lblUserId;
-	private JButton btnConnect;
-	
-	//Main GUI 변수
-	private JPanel contentPane;
-	private JTextArea taContentsView;
-	private JTextField tfMessage;
-	private JLabel lblTotalPersonNum;
-	private JButton btnSendMessage;
-	private JLabel lblRoomList;
-	private JButton btnJoinRoom;
-	private JButton btnMakeRoom;
-	private JButton btnConfirm;
-	private JList lsRoomList;					//방 목록 리스트
-	private JList lsTotalNum;					//전체 접속자 리스트
 
-	//soket 자원 변수
+public class Client extends JFrame implements ActionListener {
+
+	// GUI자원
+	private JPanel main_pnl;
+	private JTextField hostIP_tf;
+	private JTextField port_tf;
+	private JTextField userID_tf;
+	private JTextField chatting_tf;
+	private JTextArea viewChat_ta;
+	private JButton connect_btn;
+	private JButton confirm_btn;
+	private JButton sendNote_btn;
+	private JButton joinRomm_btn;
+	private JList totalList_lst; // 전체접속자 리스트
+	private JList roomList_lst; // 방 리스트
+	private JButton btn_makeRoom;
+	private JButton btn_outRoom;
+	private JButton btn_end;
+	private JPanel panel_1;
+
+	// network 자원
 	private Socket socket;
-	private String ip = "";			//ip는 String 타입 이다.
-	private int port;			//port 는 int 타입 이다.
-	private String id;
+	private String ip;
+	private int port;
+	private String user_id;
 	private InputStream is;
 	private OutputStream os;
 	private DataInputStream dis;
 	private DataOutputStream dos;
-	
-	//그외 변수들
-	Vector<String> userList = new Vector<String>();
-	Vector<String> roomList = new Vector<String>();
-	StringTokenizer st;
-	
-	
-	public Client() { 
-		Login_init();			//Login 창 화면구성
-		Main_init();			//Main 창 화면구성
-		addListener();			//리스너 연결
+
+	// 그외 변수들
+	private Vector<String> user_Vclist = new Vector<String>();
+	private Vector<String> roomList_vc = new Vector<String>();
+	private StringTokenizer st;
+	private String my_roomName;
+
+	public Client() {
+		init();
+		addListener();
 	}
-	
-	private void Login_init() {
-		//조심해야할 부분 this. 이 아닌 Login_init. 임
-		Login_init.setTitle("로그인");
-		Login_init.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Login_init.setBounds(100, 100, 340, 430);
-		pnlLogin = new JPanel();
-		pnlLogin.setBorder(new EmptyBorder(5, 5, 5, 5));
-		Login_init.setContentPane(pnlLogin);
-		pnlLogin.setLayout(null);
-		
-		lblServerIp = new JLabel("Server IP :");
-		lblServerIp.setBounds(12, 183, 64, 15);
-		pnlLogin.add(lblServerIp);
-		
-		lblServerPort = new JLabel("Server Port :");
-		lblServerPort.setBounds(12, 245, 89, 15);
-		pnlLogin.add(lblServerPort);
-		
-		lblUserId = new JLabel("User ID :");
-		lblUserId.setBounds(12, 301, 64, 15);
-		pnlLogin.add(lblUserId);
-		
-		tfServerIp = new JTextField();
-		tfServerIp.setBounds(134, 180, 171, 21);
-		pnlLogin.add(tfServerIp);
-		tfServerIp.setColumns(10);
-		
-		tfServerPort = new JTextField();
-		tfServerPort.setBounds(134, 242, 171, 21);
-		pnlLogin.add(tfServerPort);
-		tfServerPort.setColumns(10);
-		
-		tfUserId = new JTextField();
-		tfUserId.setBounds(134, 298, 171, 21);
-		pnlLogin.add(tfUserId);
-		tfUserId.setColumns(10);
-		
-		btnConnect = new JButton("접속");
-		btnConnect.setBounds(62, 350, 209, 23);
-		pnlLogin.add(btnConnect);
-		
-		tfServerIp.setText("127.0.0.1");
-		
-		Login_init.setVisible(true);
-	}
-	
-	private void Main_init(){
+
+	private void init() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(500, 100, 765, 485);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
-		
-		lblTotalPersonNum = new JLabel("전 제 접 속 자");
-		lblTotalPersonNum.setBounds(12, 10, 97, 15);
-		contentPane.add(lblTotalPersonNum);
-		
-		lsTotalNum = new JList();
-		lsTotalNum.setBounds(12, 28, 112, 127);
-		contentPane.add(lsTotalNum);
-		
-		btnSendMessage = new JButton("쪽지보내기");
-		btnSendMessage.setBounds(12, 165, 112, 23);
-		contentPane.add(btnSendMessage);
-		
-		lblRoomList = new JLabel("채 팅 방 목 록");
-		lblRoomList.setBounds(12, 198, 97, 15);
-		contentPane.add(lblRoomList);
-		
-		lsRoomList = new JList();
-		lsRoomList.setBounds(12, 219, 112, 127);
-		contentPane.add(lsRoomList);
-		
-		btnJoinRoom = new JButton("방 참여");
-		btnJoinRoom.setBounds(12, 356, 112, 23);
-		contentPane.add(btnJoinRoom);
-		
-		btnMakeRoom = new JButton("방 만들기");
-		btnMakeRoom.setBounds(12, 400, 112, 23); 
-		contentPane.add(btnMakeRoom);
-		
-		taContentsView = new JTextArea();
-		taContentsView.setBounds(136, 28, 588, 350);
-		contentPane.add(taContentsView);
-		
-		tfMessage = new JTextField();
-		tfMessage.setBounds(133, 401, 482, 22);
-		contentPane.add(tfMessage);
-		tfMessage.setColumns(10);
-		
-		btnConfirm = new JButton("전송");
-		btnConfirm.setBounds(627, 400, 97, 23);
-		contentPane.add(btnConfirm);
-		
+		setBounds(100, 100, 474, 483);
+		main_pnl = new JPanel();
+		main_pnl.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(main_pnl);
+		main_pnl.setLayout(null);
+
+		JTabbedPane Jtab = new JTabbedPane(JTabbedPane.TOP);
+		Jtab.setBounds(12, 27, 328, 407);
+		main_pnl.add(Jtab);
+
+		panel_1 = new JPanel();
+		Jtab.addTab("로그인", null, panel_1, null);
+		panel_1.setLayout(null);
+
+		JLabel hostIP_lbl = new JLabel("Host_IP ");
+		hostIP_lbl.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		hostIP_lbl.setBounds(12, 25, 91, 15);
+		panel_1.add(hostIP_lbl);
+
+		hostIP_tf = new JTextField();
+		hostIP_tf.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		hostIP_tf.setBounds(112, 21, 199, 21);
+		panel_1.add(hostIP_tf);
+		hostIP_tf.setColumns(10);
+
+		JLabel port_lbl = new JLabel("Server_Port");
+		port_lbl.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		port_lbl.setBounds(12, 72, 91, 15);
+		panel_1.add(port_lbl);
+
+		port_tf = new JTextField();
+		port_tf.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		port_tf.setBounds(112, 69, 199, 21);
+		panel_1.add(port_tf);
+		port_tf.setColumns(10);
+
+		JLabel userID_lbl = new JLabel("User_ID");
+		userID_lbl.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		userID_lbl.setBounds(12, 122, 91, 15);
+		panel_1.add(userID_lbl);
+
+		userID_tf = new JTextField();
+		userID_tf.setBounds(112, 119, 199, 21);
+		panel_1.add(userID_tf);
+		userID_tf.setColumns(10);
+
+		JLabel img_lbl = new JLabel("input the image");
+		img_lbl.setIcon(new ImageIcon());
+		img_lbl.setBounds(12, 213, 299, 155);
+		panel_1.add(img_lbl);
+
+		connect_btn = new JButton("connect");
+		connect_btn.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		connect_btn.setBounds(214, 162, 97, 23);
+		panel_1.add(connect_btn);
+
+		JPanel panel = new JPanel();
+		Jtab.addTab("대기실", null, panel, null);
+		panel.setLayout(null);
+
+		JLabel totalList_lbl = new JLabel("전체접속자");
+		totalList_lbl.setHorizontalAlignment(SwingConstants.CENTER);
+		totalList_lbl.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		totalList_lbl.setBounds(12, 28, 102, 15);
+		panel.add(totalList_lbl);
+
+		JLabel roomList_lbl = new JLabel("방 리스트");
+		roomList_lbl.setHorizontalAlignment(SwingConstants.CENTER);
+		roomList_lbl.setFont(new Font("휴먼모음T", Font.BOLD, 13));
+		roomList_lbl.setBounds(209, 27, 102, 15);
+		panel.add(roomList_lbl);
+
+		totalList_lst = new JList();
+		totalList_lst.setBounds(12, 69, 102, 257);
+		panel.add(totalList_lst);
+
+		roomList_lst = new JList();
+		roomList_lst.setBounds(209, 69, 102, 257);
+		panel.add(roomList_lst);
+
+		sendNote_btn = new JButton("쪽지보내기");
+		sendNote_btn.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		sendNote_btn.setBounds(12, 345, 102, 23);
+		panel.add(sendNote_btn);
+
+		joinRomm_btn = new JButton("채팅방참여");
+		joinRomm_btn.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		joinRomm_btn.setBounds(209, 345, 102, 23);
+		panel.add(joinRomm_btn);
+		hostIP_tf.setText("127.0.0.1");
+
+		JPanel panel_2 = new JPanel();
+		Jtab.addTab("채팅", null, panel_2, null);
+		panel_2.setLayout(null);
+
+		viewChat_ta = new JTextArea();
+		viewChat_ta.setEnabled(false);
+		viewChat_ta.setEditable(false);
+		viewChat_ta.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		viewChat_ta.setBounds(0, 0, 323, 337);
+		panel_2.add(viewChat_ta);
+
+		chatting_tf = new JTextField();
+		chatting_tf.setFont(new Font("휴먼모음T", Font.BOLD, 11));
+		chatting_tf.setBounds(0, 347, 214, 21);
+		panel_2.add(chatting_tf);
+		chatting_tf.setColumns(10);
+
+		confirm_btn = new JButton("전 송");
+		confirm_btn.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		confirm_btn.setBounds(226, 346, 97, 23);
+		panel_2.add(confirm_btn);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setEnabled(false);
+		scrollPane.setBounds(0, 0, 323, 337);
+		panel_2.add(scrollPane);
+
+		btn_makeRoom = new JButton("방 만들기");
+		btn_makeRoom.setFont(new Font("휴먼모음T", Font.BOLD, 11));
+		btn_makeRoom.setBounds(352, 93, 97, 23);
+		main_pnl.add(btn_makeRoom);
+
+		btn_outRoom = new JButton("방 나가기");
+		btn_outRoom.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		btn_outRoom.setBounds(352, 150, 97, 23);
+		main_pnl.add(btn_outRoom);
+		btn_outRoom.setEnabled(false);
+		btn_end = new JButton("종료");
+		btn_end.setFont(new Font("휴먼모음T", Font.BOLD, 12));
+		btn_end.setBounds(352, 398, 97, 23);
+		main_pnl.add(btn_end);
 		setVisible(true);
+
 	}
-	
-	private void addListener() {
-		btnConnect.addActionListener(this);
-		btnSendMessage.addActionListener(this);
-		btnJoinRoom.addActionListener(this);
-		btnMakeRoom.addActionListener(this);
-		btnConfirm.addActionListener(this);
-	}
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnConnect) {
-			
-			ip = tfServerIp.getText().trim();
-			port = Integer.parseInt(tfServerPort.getText().trim()); //int 형으로 변환
-			id = tfUserId.getText().trim();
-			//this.setVisible(true);
-			Login_init.setVisible(false);
-			startNetwork();
-			System.out.println("접속버튼 클릭됨...");
-		}else if(e.getSource() == btnSendMessage) {
-			System.out.println("쪽지보내기버튼클릭");
-		}else if(e.getSource() == btnJoinRoom) {
-			System.out.println("방참여 버튼 클릭");
-		}else if(e.getSource() == btnMakeRoom) {
-			System.out.println("방 만들기 버튼 클릭");
-		}else if(e.getSource() == btnConfirm) {
-			System.out.println("전송 버튼 클릭 ");
-			sendMessage("임시로 보내보는 test 메세지");
-		}
-	}
-	
-	private void startNetwork() {
-		
+
+	private void connectServer() {
 		try {
-			socket = new Socket(ip,port);
-			
-			if(socket != null) {
-				connect();
-			}
+			// 서버에 접속합니다.
+			socket = new Socket(ip, port);
+			network();
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "연결실패!", "알림",
+					JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "연결실패!", "알림",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	private void connect() { //실제적인 메서드 연결부분
+
+	private void network() {
 		
 		try {
 			is = socket.getInputStream();
 			dis = new DataInputStream(is);
-			
 			os = socket.getOutputStream();
 			dos = new DataOutputStream(os);
-			
-		} catch (IOException e) {	//에러처리부분
-			
-			e.printStackTrace();
-		}// Stream 설정 끝
-		
-		//처음 접속시 ID를 서버에게 전송
-		sendMessage(id);
-		
-		// IsTotalNum 에 id를 저장한다. 
-		userList.add(id); 
-		lsTotalNum.setListData(userList);
-		System.out.println("스레드 만나기 전");
-		
-		Thread th = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(true) {
-					try {
-						String msg = dis.readUTF();
-						System.out.println("서버측으로 부터 수신된 메세지 >> " +msg );
-						System.out.println("메세지 들어 오나");
-						inmessage(msg);
-						
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+
+			user_id = userID_tf.getText().trim();
+			sendmessage(user_id);
+
+			// 벡터에 유저의 id 를 저장하고 리스트 화면에 추가시켜준다.
+			user_Vclist.add(user_id);
+			totalList_lst.setListData(user_Vclist);
+
+			Thread cth = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					while (true) {
+						try {
+							// 서버로부터 수신된 메세지.
+							String msg = dis.readUTF();
+							inmessage(msg);
+						} catch (IOException e) {
+							try {
+								user_Vclist.removeAll(user_Vclist);
+								roomList_vc.removeAll(roomList_vc);
+								totalList_lst.setListData(user_Vclist);
+								roomList_lst.setListData(roomList_vc);
+								viewChat_ta.setText("\n");
+								is.close();
+								os.close();
+								dis.close();
+								dos.close();
+								socket.close();
+								JOptionPane.showMessageDialog(null, "서버가 종료됨!", "알림",
+										JOptionPane.ERROR_MESSAGE);
+								break;
+							} catch (Exception e2) {
+								return ;
+							}
+						}
 					}
 				}
-			}
-		}); 
-		th.start();
-	} //런 메서드의 끝
-	private void inmessage(String str) {		// 서버로부터 들어오는 모든 메세지
-		//어떤문자열을 자를것인지, 어떤 문자로 구분할 것인지
-		st = new StringTokenizer(str,"/");
-		
+			});
+			cth.start();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "연결실패!", "알림",
+					JOptionPane.ERROR_MESSAGE);
+		}// Stream 준비완료
+		connect_btn.setEnabled(false);
+	}
+
+	private void inmessage(String str) {
+
+		st = new StringTokenizer(str, "/");
+
 		String protocol = st.nextToken();
 		String message = st.nextToken();
-		
-		System.out.println("프로토콜 :" + protocol);
-		System.out.println("내용" + message);
-		
-		
+
+		System.out.println("프로토콜" + protocol);
+		System.out.println("메세지" + message);
+
+		if (protocol.equals("NewUser")) {
+			user_Vclist.add(message);
+			totalList_lst.setListData(user_Vclist);
+		} else if (protocol.equals("OldUser")) {
+			user_Vclist.add(message);
+			totalList_lst.setListData(user_Vclist);
+		} else if (protocol.equals("Note")) {
+			st = new StringTokenizer(message, "@");
+			String user = st.nextToken();
+			String note = st.nextToken();
+			JOptionPane.showMessageDialog(null, note, user + "로 부터 온 메세지",
+					JOptionPane.CLOSED_OPTION);
+		} else if (protocol.equals("CreateRoom")) {
+			// 방만들기가 성공했을 경우
+			my_roomName = message;
+			joinRomm_btn.setEnabled(false);
+			btn_outRoom.setEnabled(true);
+			btn_makeRoom.setEnabled(false);
+		} else if (protocol.equals("CreateRoomFail")) {
+			JOptionPane.showMessageDialog(null, "같은 방 이름이 존재합니다.!", "알림",
+					JOptionPane.ERROR_MESSAGE);
+		} else if (protocol.equals("new_Room")) {
+			roomList_vc.add(message);
+			roomList_lst.setListData(roomList_vc);
+		} else if (protocol.equals("Chatting")) {
+			String msg = st.nextToken();
+			viewChat_ta.append(message + " : " + msg + "\n");
+		} else if (protocol.equals("OldRoom")) {
+			roomList_vc.add(message);
+			roomList_lst.setListData(roomList_vc);
+		} else if (protocol.equals("JoinRoom")) {
+			my_roomName = message;
+			JOptionPane.showMessageDialog(null, "채팅방 (  " + my_roomName
+					+ " ) 에 입장완료", "알림", JOptionPane.INFORMATION_MESSAGE);
+			viewChat_ta.setText("");
+		} else if(protocol.equals("UserOut")) {
+			user_Vclist.remove(message);
+			sendmessage("OutRoom/"+my_roomName);
+		} else if(protocol.equals("UserData_Updata")) {
+			totalList_lst.setListData(user_Vclist);
+			roomList_lst.setListData(roomList_vc);
+		} else if(protocol.equals("OutRoom")) {
+			viewChat_ta.append("*** (( "+my_roomName+"에서 퇴장 ))***\n");
+			my_roomName = null;
+			btn_makeRoom.setEnabled(true);
+			btn_outRoom.setEnabled(false);
+		} else if(protocol.equals("EmptyRoom")) {
+			roomList_vc.remove(message);
+		//클라이언트가 강제 종료 되었고 방이 비었을때 방 목록에서 그 방을 없애준다.	
+		} else if(protocol.equals("ErrorOutRoom") ) {
+			roomList_vc.remove(message);
+		}
 	}
-	private void sendMessage(String str) {
-		
+
+	private void sendmessage(String msg) {
 		try {
-			dos.writeUTF(str);
-			System.out.println("메세지전송");
+			dos.writeUTF(msg);
+			dos.flush();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+	}
+	// 이벤트리스너
+	private void addListener() {
+		connect_btn.addActionListener(this);
+		confirm_btn.addActionListener(this);
+		sendNote_btn.addActionListener(this);
+		joinRomm_btn.addActionListener(this);
+		chatting_tf.addActionListener(this);
+		btn_end.addActionListener(this);
+		btn_makeRoom.addActionListener(this);
+		btn_outRoom.addActionListener(this);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == connect_btn) {
+			if(hostIP_tf.getText().length() ==0) {
+				hostIP_tf.setText("IP를 입력하세요");
+				hostIP_tf.requestFocus();
+			} else if(port_tf.getText().length() ==0) {
+				port_tf.setText("포트번호를 입력하세요");
+				port_tf.requestFocus();
+			} else if(userID_tf.getText().length() == 0) {
+				userID_tf.setText("id 를 입력하세요");
+				userID_tf.requestFocus();
+			} else {
+				ip = hostIP_tf.getText();
+				try{
+				port = Integer.parseInt(port_tf.getText().trim());
+				}catch (Exception e2) {
+					port_tf.setText("잘못 입력하였습니다.");
+				}
+				user_id = userID_tf.getText().trim();
+				// 서버연결하기
+				connectServer();
+				setTitle("[" + user_id + " ] 님 깨알톡에 오신걸 환경합니다.");
+			}
+		} else if (e.getSource() == confirm_btn) {
+			System.out.println("전송버튼클릭");
+			sendmessage("Chatting/" + my_roomName + "/"
+					+ chatting_tf.getText().trim());
+		} else if (e.getSource() == sendNote_btn) {
+			System.out.println("쪽지보내기버튼 클릭");
+			String user = (String) totalList_lst.getSelectedValue();
+			if (user == null) {
+				JOptionPane.showMessageDialog(null, "대상을 선택하세요", "알림",
+						JOptionPane.ERROR_MESSAGE);
+			}
+			String note = JOptionPane.showInputDialog("보낼메세지");
+			if (note != null) {
+				sendmessage("Note/" + user + "@" + note);
+			}
+		} else if (e.getSource() == joinRomm_btn) {
+			System.out.println("방입장버튼 클릭");
+			String joinRoom = (String) roomList_lst.getSelectedValue();
+			btn_outRoom.setEnabled(true);
+			btn_makeRoom.setEnabled(false);
+			sendmessage("JoinRoom/" + joinRoom);
+		} else if (e.getSource() == chatting_tf) {
+			if(chatting_tf.getText().length() == 0 ){
+				System.out.println("이게 0값으로 들어가나?");
+				sendmessage("Chatting/" + my_roomName + "/"
+						+ chatting_tf.getText()+"   ");
+			}else {
+				sendmessage("Chatting/" + my_roomName + "/"
+						+ chatting_tf.getText());
+			}
+		} else if (e.getSource() == btn_makeRoom) {
+			System.out.println("방생성버튼클릭");
+			String roomName = JOptionPane.showInputDialog("방 이름을 입력하세요");
+			if (roomName != null) {
+				sendmessage("CreateRoom/" + roomName);
+			}
+		} else if(e.getSource() == btn_outRoom) {
+			System.out.println("방나가기버튼클릭.");
+			sendmessage("OutRoom/"+my_roomName);
+		} else if(e.getSource() == btn_end) {
+			System.exit(0);
+		}
+		chatting_tf.setText("");
 	}
 	public static void main(String[] args) {
 		new Client();
 	}
-
 }
 
 
