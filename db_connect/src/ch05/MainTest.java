@@ -6,7 +6,7 @@ public class MainTest {
 		
 		ShopDbService dbService = new ShopDbService();
 		
-		dbService.innerJoin1();
+//		dbService.innerJoin1();
 		
 
 	}

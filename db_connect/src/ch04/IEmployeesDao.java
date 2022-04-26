@@ -1,5 +1,6 @@
 package ch04;
 
+// 사용 안함 XXX 
 public interface IEmployeesDao {
 	
 	// inner join : userTbl, buyTbl 결과 *
