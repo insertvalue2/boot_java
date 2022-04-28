@@ -11,14 +11,12 @@ import com.google.gson.Gson;
 
 import dto.Todo;
 
-
-
 public class HttpMainTest2 {
 	public static void main(String[] args) {
 		try {
 			URL url = new URL("https://jsonplaceholder.typicode.com/todos/10");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			
+
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("Content-type", "application/json");
 			connection.connect();
@@ -41,7 +39,7 @@ public class HttpMainTest2 {
 			String str = sb.toString();
 			Gson gson = new Gson();
 			Todo todo = gson.fromJson(str, Todo.class);
-			
+
 			System.out.println(todo.getUserId());
 			System.out.println(todo.getId());
 			System.out.println(todo.getTitle());

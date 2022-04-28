@@ -24,11 +24,11 @@ public class JsonMainTest1 {
 		System.out.println(jsonObj1.get("취미"));
 		System.out.println(jsonObj1.get("결혼여부"));
 		System.out.println(jsonObj1);
-		
-		// 깊은 복사와 얕은 복사 개념 이해 하기 
-		JsonObject jsonObj2 = jsonObj1; // 얕은 복사 
-		JsonObject jsonObj3 = jsonObj1.deepCopy(); // 깊은 복사 
-		
+
+		// 깊은 복사와 얕은 복사 개념 이해 하기
+		JsonObject jsonObj2 = jsonObj1; // 얕은 복사
+		JsonObject jsonObj3 = jsonObj1.deepCopy(); // 깊은 복사
+
 		System.out.println("-------------");
 		jsonObj2.addProperty("이름", "변경됨??");
 		System.out.println(jsonObj1);
@@ -37,18 +37,18 @@ public class JsonMainTest1 {
 		System.out.println(jsonObj3);
 		System.out.println("---------------------");
 		System.out.println(jsonObj1);
-		
-		JsonArray jsonArray = new JsonArray(); 
+
+		JsonArray jsonArray = new JsonArray();
 		jsonArray.add(jsonObj1);
 		jsonArray.add(jsonObj2);
 		jsonArray.add(jsonObj3);
-		
+
 		System.out.println(jsonArray);
-		
+
 //		JSONArray jsonObjectArray = new JSONArray();
 //		JsonArray jsonArray = new JsonArray();
 //		jsonArray.add(jsonObj);
-		
+
 //		jsonObjectArray.put(jsonObj);
 //		jsonObjectArray.put(jsonObj);
 //		jsonObjectArray.put(jsonObj);
