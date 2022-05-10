@@ -20,7 +20,7 @@ public class HttpMainTest2 {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			
 			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Content-type", "application/json");
+//			connection.setRequestProperty("Content-type", "application/json");
 			connection.connect();
 
 			int statusCode = connection.getResponseCode();

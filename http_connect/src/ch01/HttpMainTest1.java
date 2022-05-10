@@ -11,17 +11,17 @@ public class HttpMainTest1 {
 
 	public static void main(String[] args) {
 		try {
+			
 			URL url = new URL("https://jsonplaceholder.typicode.com/todos/10");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Content-type", "application/json");
+//			connection.setRequestProperty("Content-type", "application/json");
 			connection.connect();
 
 			int statusCode = connection.getResponseCode();
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
 			StringBuffer sb = new StringBuffer();
 			String line = null;
 
