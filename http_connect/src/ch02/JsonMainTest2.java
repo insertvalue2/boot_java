@@ -3,36 +3,9 @@ package ch02;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
-import dto.Todo;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-/**
- * 
- * 
-[
-	
-	{
-		"name": "홍길동"
-		"age" : 20, 
-		"address" : "부산"
-	},
-	{
-		"name": "이순신"
-		"age" : 33, 
-		"address" : "서울"
-	},
-	{
-		"name": "세종대왕"
-		"age" : 59, 
-		"address" : "세종시"
-	}
-]
- *
- */
 
 
 @AllArgsConstructor
